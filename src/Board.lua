@@ -299,6 +299,91 @@ function Board:getFallingTiles()
     return tweens
 end
 
+function Board:matchExists()
+    for y = 1, 8 do
+        for x = 1, 8 do
+            temp1 = self.tiles[y][x]
+
+            --check tile to left
+            if x-1 >= 1 then
+                temp2 = self.tiles[y][x-1]
+                self:swap(temp1, temp2)
+                --match results from swap
+                if self:calculateMatches() then
+                    --put the tiles back
+                    self:swap(temp1, temp2)
+                    return true
+                end
+                --put the tiles back
+                self:swap(temp1, temp2)
+
+            end
+
+            --check tile to right
+            if x+1 <= 8 then
+                temp2 = self.tiles[y][x+1]
+                self:swap(temp1, temp2)
+                --match results from swap
+                if self:calculateMatches() then
+                    --put the tiles back
+                    self:swap(temp1, temp2)
+                    return true
+                end
+                --put the tiles back
+                self:swap(temp1, temp2)
+
+            end
+
+            --check tile above
+            if y-1 >= 1 then
+                temp2 = self.tiles[y-1][x]
+                self:swap(temp1, temp2)
+                --match results from swap
+                if self:calculateMatches() then
+                    --put the tiles back
+                    self:swap(temp1, temp2)
+                    return true
+                end
+                --put the tiles back
+                self:swap(temp1, temp2)
+
+            end
+
+            --check tile below
+            if y+1 <=8 then
+                temp2 = self.tiles[y+1][x]
+                self:swap(temp1, temp2)
+                --match results from swap
+                if self:calculateMatches() then
+                    --put the tiles back
+                    self:swap(temp1, temp2)
+                    return true
+                end
+                --put the tiles back
+                self:swap(temp1, temp2)
+            end
+        end
+    end
+    return false
+end
+
+function Board:swap(tile1, tile2)
+    -- swap grid positions of tiles
+    local tempX = tile2.gridX
+    local tempY = tile2.gridY
+    local tempTile = tile2
+
+    tile2.gridX = tile1.gridX
+    tile2.gridY = tile1.gridY
+
+    tile1.gridX = tempX
+    tile1.gridY = tempY
+
+    -- swap tiles in the tiles table
+    self.tiles[tempY][tempX] = tile1
+    self.tiles[tile2.gridY][tile2.gridX] = tile2
+end
+
 function Board:render()
     for y = 1, #self.tiles do
         for x = 1, #self.tiles[1] do

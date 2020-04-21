@@ -70,6 +70,14 @@ function PlayState:enter(params)
     self.scoreGoal = self.level * 1.25 * 1000
     -- testing
     -- self.scoreGoal = 201
+
+    --reset the board until there are possible matches.
+    while not self.board:matchExists() do
+        print("Enter: Reshuffling the board")
+        self.board = nil
+        self.board = Board(VIRTUAL_WIDTH - 272, 16, self.level)
+    end
+    print("Enter: A Match opportunity exists!")
 end
 
 function PlayState:update(dt)
@@ -162,16 +170,43 @@ function PlayState:update(dt)
 
                 self.board.tiles[newTile.gridY][newTile.gridX] = newTile
 
-                -- tween coordinates between the two so they swap
-                Timer.tween(0.1, {
-                    [self.highlightedTile] = {x = newTile.x, y = newTile.y},
-                    [newTile] = {x = self.highlightedTile.x, y = self.highlightedTile.y}
-                })
+                if not self.board:calculateMatches() then
+                    --debug print("Not a matching move")
+                    local tempX = newTile.gridX
+                    local tempY = newTile.gridY
 
-                -- once the swap is finished, we can tween falling blocks as needed
-                :finish(function()
-                    self:calculateMatches()
-                end)
+                    newTile.gridX = self.highlightedTile.gridX
+                    newTile.gridY = self.highlightedTile.gridY
+                    self.highlightedTile.gridX = tempX
+                    self.highlightedTile.gridY = tempY
+
+                    self.board.tiles[self.highlightedTile.gridY][self.highlightedTile.gridX] =
+                        self.highlightedTile
+
+                    self.board.tiles[newTile.gridY][newTile.gridX] = newTile
+
+                    self.highlightedTile = nil
+                    gSounds['error']:play()
+                else
+                    --debug print("Match Move!!!")
+                    -- tween coordinates between the two so they swap
+                    Timer.tween(0.1, {
+                        [self.highlightedTile] = {x = newTile.x, y = newTile.y},
+                        [newTile] = {x = self.highlightedTile.x, y = self.highlightedTile.y}
+                    })
+                    -- once the swap is finished, we can tween falling blocks as needed
+                    :finish(function()
+                        self:calculateMatches()
+                    end)
+                end
+
+                --reset the board until there are possible matches.
+                while not self.board:matchExists() do
+                    --debug print("Update: Reshuffling the board")
+                    self.board = nil
+                    self.board = Board(VIRTUAL_WIDTH - 272, 16, self.level)
+                end
+                --debug print("Update: A Match opportunity exists!")
             end
         end
     end
