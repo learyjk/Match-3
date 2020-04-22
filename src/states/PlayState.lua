@@ -77,7 +77,7 @@ function PlayState:enter(params)
         self.board = nil
         self.board = Board(VIRTUAL_WIDTH - 272, 16, self.level)
     end
-    print("Enter: A Match opportunity exists!")
+    --debug print("Enter: A Match opportunity exists!")
 end
 
 function PlayState:update(dt)
