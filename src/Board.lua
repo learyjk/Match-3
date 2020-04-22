@@ -32,7 +32,7 @@ function Board:initializeTiles(level)
         for tileX = 1, 8 do
             -- create a new tile at X,Y with a random color.
             -- Variety is random based on level (assignment 3)
-            shiny = math.random(2)
+            shiny = math.random(10)
             if shiny == 1 then
                 -- Shiny Tile (isShiny = True) (assignment 3)
                 table.insert(self.tiles[tileY], Tile(tileX, tileY, math.random(18), math.random(self.level), true))
